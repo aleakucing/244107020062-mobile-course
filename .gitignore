@@ -1,0 +1,45 @@
+﻿# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+
+# IDE
+.idea/
+**/.idea/
+*.iml
+**/*.iml
+.vscode/
+**/.vscode/
+
+# Flutter / Dart Build & Cache
+.dart_tool/
+**/.dart_tool/
+.flutter-plugins-dependencies
+**/.flutter-plugins-dependencies
+.pub-cache/
+**/.pub-cache/
+.pub/
+**/.pub/
+build/
+**/build/
+.metadata
+**/.metadata
+pubspec.lock
+**/pubspec.lock
+
+# Native Platform Folders
+# Portfolio only tracks: lib/, test/, screenshots/, README.md, pubspec.yaml
+**/android/
+**/ios/
+**/linux/
+**/macos/
+**/web/
+**/windows/
