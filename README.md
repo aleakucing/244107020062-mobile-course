@@ -13,7 +13,7 @@
 | Minggu | Topik Praktikum | Direktori | Status |
 |:---:|---|---|:---:|
 | **01** | Mobile Development Ecosystem & Flutter Refresh | [`01-week-1-mobile-development-ecosystem-flutter-refresh/`](./01-week-1-mobile-development-ecosystem-flutter-refresh/) | Selesai |
-| **02** | Declarative UI & Responsive Design | `02-week-2-declarative-ui-responsive-design/` | Selesai |
+| **02** | Declarative UI & Responsive Design | [`02-week-2-declarative-ui-responsive-design/`](./02-week-2-declarative-ui-responsive-design/) | Selesai |
 | **03** | Navigation & State Management | `03-week-3-navigation-state-management/` | - |
 | **04** | Networking & REST API | `04-week-4-networking-rest-api/` | - |
 | **05** | Local Storage & Offline-First | `05-week-5-local-storage-offline-first/` | - |
