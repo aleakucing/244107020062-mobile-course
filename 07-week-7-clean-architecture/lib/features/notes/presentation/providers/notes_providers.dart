@@ -49,8 +49,9 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
   }
 
   Future<void> addNote({required String title, String body = ''}) async {
-    final result =
-        await ref.read(addNoteProvider).call(title: title, body: body);
+    final result = await ref
+        .read(addNoteProvider)
+        .call(title: title, body: body);
     if (result.failure != null) throw Exception(result.failure!.message);
     ref.invalidateSelf();
   }
@@ -87,8 +88,7 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
   }
 }
 
-final notesProvider =
-    AsyncNotifierProvider<NotesNotifier, List<Note>>(
+final notesProvider = AsyncNotifierProvider<NotesNotifier, List<Note>>(
   NotesNotifier.new,
   retry: (retryCount, error) => null,
 );
@@ -102,33 +102,31 @@ final dirtyCountProvider = FutureProvider<int>((ref) async {
 /// Helper testing: baca state pertama yang bukan loading.
 Future<List<Note>> readNotesOnce(ProviderContainer container) {
   final completer = Completer<List<Note>>();
-  final sub = container.listen<AsyncValue<List<Note>>>(
-    notesProvider,
-    (previous, next) {
-      if (next.isLoading || completer.isCompleted) return;
-      next.whenData(completer.complete);
-      if (next.hasError) {
-        completer.completeError(
-          next.error ?? StateError('unknown error'),
-          next.stackTrace ?? StackTrace.empty,
-        );
-      }
-    },
-    fireImmediately: true,
-  );
+  final sub = container.listen<AsyncValue<List<Note>>>(notesProvider, (
+    previous,
+    next,
+  ) {
+    if (next.isLoading || completer.isCompleted) return;
+    next.whenData(completer.complete);
+    if (next.hasError) {
+      completer.completeError(
+        next.error ?? StateError('unknown error'),
+        next.stackTrace ?? StackTrace.empty,
+      );
+    }
+  }, fireImmediately: true);
   return completer.future.whenComplete(sub.close);
 }
 
 Future<Object?> readNotesErrorOnce(ProviderContainer container) {
   final completer = Completer<Object?>();
-  final sub = container.listen<AsyncValue<List<Note>>>(
-    notesProvider,
-    (previous, next) {
-      if (next.isLoading || completer.isCompleted) return;
-      completer.complete(next.error);
-    },
-    fireImmediately: true,
-  );
+  final sub = container.listen<AsyncValue<List<Note>>>(notesProvider, (
+    previous,
+    next,
+  ) {
+    if (next.isLoading || completer.isCompleted) return;
+    completer.complete(next.error);
+  }, fireImmediately: true);
   return completer.future.whenComplete(sub.close);
 }
 

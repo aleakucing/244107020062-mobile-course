@@ -10,7 +10,7 @@ import '../models/note_model.dart';
 // Semua exception mentah diubah menjadi Failure sebelum mencapai UI.
 class NoteRepositoryImpl implements NoteRepository {
   NoteRepositoryImpl({Future<Database> Function()? openDb})
-      : _openDb = openDb ?? openNotesDb;
+    : _openDb = openDb ?? openNotesDb;
 
   final Future<Database> Function() _openDb;
 
@@ -19,8 +19,7 @@ class NoteRepositoryImpl implements NoteRepository {
     try {
       final db = await _openDb();
       final rows = await db.query('notes', orderBy: 'updated_at DESC');
-      final notes =
-          rows.map((r) => NoteModel.fromMap(r).toEntity()).toList();
+      final notes = rows.map((r) => NoteModel.fromMap(r).toEntity()).toList();
       return (notes: notes, failure: null);
     } catch (e) {
       return (
@@ -40,19 +39,25 @@ class NoteRepositoryImpl implements NoteRepository {
       final now = DateTime.now();
       final id = await db.insert(
         'notes',
-        NoteModel(title: title, body: body, updatedAt: now, dirty: true)
-            .toMap(),
+        NoteModel(
+          title: title,
+          body: body,
+          updatedAt: now,
+          dirty: true,
+        ).toMap(),
       );
       return (
         note: Note(
-            id: id, title: title, body: body, updatedAt: now, dirty: true),
+          id: id,
+          title: title,
+          body: body,
+          updatedAt: now,
+          dirty: true,
+        ),
         failure: null,
       );
     } catch (e) {
-      return (
-        note: null,
-        failure: LocalFailure('Gagal menyimpan catatan: $e'),
-      );
+      return (note: null, failure: LocalFailure('Gagal menyimpan catatan: $e'));
     }
   }
 
@@ -83,10 +88,7 @@ class NoteRepositoryImpl implements NoteRepository {
         failure: null,
       );
     } catch (e) {
-      return (
-        note: null,
-        failure: LocalFailure('Gagal mengubah catatan: $e'),
-      );
+      return (note: null, failure: LocalFailure('Gagal mengubah catatan: $e'));
     }
   }
 
@@ -105,8 +107,9 @@ class NoteRepositoryImpl implements NoteRepository {
   Future<({int dirtyCount, Failure? failure})> countDirty() async {
     try {
       final db = await _openDb();
-      final rows = await db
-          .rawQuery('SELECT COUNT(*) AS c FROM notes WHERE dirty = 1');
+      final rows = await db.rawQuery(
+        'SELECT COUNT(*) AS c FROM notes WHERE dirty = 1',
+      );
       final count = ((rows.first['c'] as num?)?.toInt() ?? 0);
       return (dirtyCount: count, failure: null);
     } catch (e) {

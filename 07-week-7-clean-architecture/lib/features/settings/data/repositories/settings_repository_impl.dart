@@ -13,10 +13,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
       final prefs = await SharedPreferences.getInstance();
       return (darkMode: prefs.getBool(_darkModeKey) ?? false, failure: null);
     } catch (e) {
-      return (
-        darkMode: false,
-        failure: LocalFailure('Gagal membaca tema: $e'),
-      );
+      return (darkMode: false, failure: LocalFailure('Gagal membaca tema: $e'));
     }
   }
 
@@ -35,10 +32,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<({String? lastOpened, Failure? failure})> getLastOpened() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      return (
-        lastOpened: prefs.getString(_lastOpenedKey),
-        failure: null,
-      );
+      return (lastOpened: prefs.getString(_lastOpenedKey), failure: null);
     } catch (e) {
       return (
         lastOpened: null,
@@ -51,8 +45,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<({Failure? failure})> markOpenedNow() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(
-          _lastOpenedKey, DateTime.now().toIso8601String());
+      await prefs.setString(_lastOpenedKey, DateTime.now().toIso8601String());
       return (failure: null);
     } catch (e) {
       return (failure: LocalFailure('Gagal mencatat waktu dibuka: $e'));

@@ -63,8 +63,9 @@ Future<void> pumpPhone(WidgetTester tester, {bool dark = false}) async {
     ProviderScope(
       overrides: [
         noteRepositoryProvider.overrideWithValue(SeededNoteRepository()),
-        settingsRepositoryProvider
-            .overrideWithValue(FakeSettingsRepository(dark: dark)),
+        settingsRepositoryProvider.overrideWithValue(
+          FakeSettingsRepository(dark: dark),
+        ),
         lastOpenedProvider.overrideWithValue(
           const AsyncValue.data('2026-09-26T10:00:00.000'),
         ),

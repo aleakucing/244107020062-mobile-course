@@ -15,12 +15,10 @@ class AddNote {
   }) {
     final trimmed = title.trim();
     if (trimmed.isEmpty) {
-      return Future.value(
-        (
-          note: null,
-          failure: const ValidationFailure('Judul tidak boleh kosong'),
-        ),
-      );
+      return Future.value((
+        note: null,
+        failure: const ValidationFailure('Judul tidak boleh kosong'),
+      ));
     }
     return _repository.addNote(title: trimmed, body: body.trim());
   }

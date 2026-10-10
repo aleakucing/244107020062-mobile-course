@@ -5,8 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('NoteModel roundtrip mempertahankan field', () {
     final now = DateTime(2026, 9, 27, 10, 30);
-    final model =
-        NoteModel(id: 1, title: 'Belanja', body: 'Susu', updatedAt: now, dirty: true);
+    final model = NoteModel(
+      id: 1,
+      title: 'Belanja',
+      body: 'Susu',
+      updatedAt: now,
+      dirty: true,
+    );
     final back = NoteModel.fromMap(model.toMap());
     expect(back.id, 1);
     expect(back.title, 'Belanja');

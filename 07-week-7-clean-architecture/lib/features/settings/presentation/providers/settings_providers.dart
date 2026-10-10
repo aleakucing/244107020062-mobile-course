@@ -8,14 +8,14 @@ final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
   return SettingsRepositoryImpl();
 });
 
-final darkModeProvider =
-    AsyncNotifierProvider<DarkModeNotifier, bool>(DarkModeNotifier.new);
+final darkModeProvider = AsyncNotifierProvider<DarkModeNotifier, bool>(
+  DarkModeNotifier.new,
+);
 
 class DarkModeNotifier extends AsyncNotifier<bool> {
   @override
   Future<bool> build() async {
-    final result =
-        await ref.watch(settingsRepositoryProvider).getDarkMode();
+    final result = await ref.watch(settingsRepositoryProvider).getDarkMode();
     if (result.failure != null) throw Exception(result.failure!.message);
     return result.darkMode;
   }
@@ -24,8 +24,9 @@ class DarkModeNotifier extends AsyncNotifier<bool> {
     final next = !(state.value ?? false);
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final result =
-          await ref.read(settingsRepositoryProvider).setDarkMode(next);
+      final result = await ref
+          .read(settingsRepositoryProvider)
+          .setDarkMode(next);
       if (result.failure != null) throw Exception(result.failure!.message);
       return next;
     });
@@ -33,8 +34,7 @@ class DarkModeNotifier extends AsyncNotifier<bool> {
 }
 
 final lastOpenedProvider = FutureProvider<String?>((ref) async {
-  final result =
-      await ref.watch(settingsRepositoryProvider).getLastOpened();
+  final result = await ref.watch(settingsRepositoryProvider).getLastOpened();
   if (result.failure != null) throw Exception(result.failure!.message);
   return result.lastOpened;
 });

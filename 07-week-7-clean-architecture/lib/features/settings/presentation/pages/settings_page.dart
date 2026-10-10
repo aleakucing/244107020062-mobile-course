@@ -25,8 +25,7 @@ class SettingsPage extends ConsumerWidget {
                 ? null
                 : (_) => ref.read(darkModeProvider.notifier).toggle(),
           ),
-          if (darkMode.isLoading)
-            const LinearProgressIndicator(minHeight: 2),
+          if (darkMode.isLoading) const LinearProgressIndicator(minHeight: 2),
           if (darkMode.hasError)
             ListTile(
               leading: const Icon(Icons.error_outline, color: Colors.red),

@@ -63,10 +63,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
   @override
   Widget build(BuildContext context) {
-    const pages = [
-      NotesPage(),
-      SettingsPage(),
-    ];
+    const pages = [NotesPage(), SettingsPage()];
 
     return Scaffold(
       body: IndexedStack(index: _index, children: pages),
