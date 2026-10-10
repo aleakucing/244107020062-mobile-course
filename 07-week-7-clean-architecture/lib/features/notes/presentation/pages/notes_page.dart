@@ -144,26 +144,36 @@ class ErrorView extends StatelessWidget {
 }
 
 Future<void> showAddDialog(BuildContext context, WidgetRef ref) {
+  final formKey = GlobalKey<FormState>();
   final titleC = TextEditingController();
   final bodyC = TextEditingController();
   return showDialog(
     context: context,
     builder: (context) => AlertDialog(
       title: const Text('Catatan baru'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: titleC,
-            decoration: const InputDecoration(labelText: 'Judul'),
-            autofocus: true,
-          ),
-          TextField(
-            controller: bodyC,
-            decoration: const InputDecoration(labelText: 'Isi'),
-            maxLines: 3,
-          ),
-        ],
+      content: Form(
+        key: formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: titleC,
+              decoration: const InputDecoration(labelText: 'Judul'),
+              autofocus: true,
+              validator: (val) {
+                if (val == null || val.trim().isEmpty) {
+                  return 'Judul tidak boleh kosong';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              controller: bodyC,
+              decoration: const InputDecoration(labelText: 'Isi'),
+              maxLines: 3,
+            ),
+          ],
+        ),
       ),
       actions: [
         TextButton(
@@ -172,13 +182,10 @@ Future<void> showAddDialog(BuildContext context, WidgetRef ref) {
         ),
         FilledButton(
           onPressed: () async {
-            final title = titleC.text.trim();
-            if (title.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Judul tidak boleh kosong')),
-              );
+            if (!formKey.currentState!.validate()) {
               return;
             }
+            final title = titleC.text.trim();
             Navigator.pop(context);
             try {
               await ref
@@ -186,9 +193,8 @@ Future<void> showAddDialog(BuildContext context, WidgetRef ref) {
                   .addNote(title: title, body: bodyC.text.trim());
             } catch (e) {
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('$e')),
-                );
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('$e')));
               }
             }
           },
