@@ -48,8 +48,10 @@ class NotesPage extends ConsumerWidget {
         data: (items) {
           if (items.isEmpty) {
             return const Center(
-              child: Text('Belum ada catatan.\nTambah lewat tombol +.',
-                  textAlign: TextAlign.center),
+              child: Text(
+                'Belum ada catatan.\nTambah lewat tombol +.',
+                textAlign: TextAlign.center,
+              ),
             );
           }
           return RefreshIndicator(
@@ -100,8 +102,7 @@ class NotesTile extends ConsumerWidget {
       trailing: IconButton(
         tooltip: 'Hapus',
         icon: const Icon(Icons.delete_outline),
-        onPressed: () =>
-            ref.read(notesProvider.notifier).deleteNote(n.id!),
+        onPressed: () => ref.read(notesProvider.notifier).deleteNote(n.id!),
       ),
     );
   }
@@ -133,10 +134,7 @@ class ErrorView extends StatelessWidget {
         children: [
           Text(message),
           const SizedBox(height: 8),
-          FilledButton(
-            onPressed: onRetry,
-            child: const Text('Coba lagi'),
-          ),
+          FilledButton(onPressed: onRetry, child: const Text('Coba lagi')),
         ],
       ),
     );
@@ -242,12 +240,15 @@ Future<void> showEditDialog(BuildContext context, WidgetRef ref, Note n) {
               return;
             }
             Navigator.pop(context);
-            await ref.read(notesProvider.notifier).updateNote(
+            await ref
+                .read(notesProvider.notifier)
+                .updateNote(
                   Note(
-                      id: n.id,
-                      title: title,
-                      body: bodyC.text.trim(),
-                      updatedAt: n.updatedAt),
+                    id: n.id,
+                    title: title,
+                    body: bodyC.text.trim(),
+                    updatedAt: n.updatedAt,
+                  ),
                 );
           },
           child: const Text('Simpan'),

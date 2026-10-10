@@ -19,7 +19,7 @@
 | **05** | Local Storage & Offline-First | [`05-week-5-local-storage-offline-first/`](./05-week-5-local-storage-offline-first/) | Selesai |
 | **06** | Authentication, Security & FCM | [`06-week-6-authentication-security-fcm/`](./06-week-6-authentication-security-fcm/) | Selesai |
 | **07** | Clean Architecture | [`07-week-7-clean-architecture/`](./07-week-7-clean-architecture/) | Selesai |
-| **08** | Mid-Project Review & Code Review | `08-week-8-mid-project-review/` | - |
+| **08** | Mid-Project Review & Code Review | [`08-week-8-mid-project-review/`](./08-week-8-mid-project-review/) | Selesai |
 | **09** | AI-Assisted Development & Vibe Coding | `09-week-9-ai-assisted-development/` | - |
 | **10** | AI Feature Integration | `10-week-10-ai-feature-integration/` | - |
 | **11** | Performance Optimization | `11-week-11-performance-optimization/` | - |
