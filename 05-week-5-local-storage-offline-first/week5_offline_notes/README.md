@@ -26,5 +26,5 @@ flutter test
 
 - [x] Layer data + preferensi selesai dan terdokumentasi di `docs/`.
 - [x] UI catatan (`lib/pages/notes_page.dart` + `lib/data/notes_providers.dart`) + `syncNotes` (`lib/data/sync.dart`) + `test/note_test.dart` selesai.
-- [x] `flutter analyze`: No issues found. `flutter test`: 13/13 pass (11 note_test + 2 widget_test).
-- Screenshot kondisi saat ini di `screenshots/` (02/03 settings valid; 01/04 perlu foto ulang setelah CRUD — lihat `screenshots/README.md`).
+- [x] `flutter analyze`: No issues found. `flutter test`: 20/20 pass (12 note_test + 2 widget_test + 6 screenshot_test golden).
+- Screenshot laporan utama di `../Screenshot/` (6 PNG tampilan mobile golden + 1 PNG hasil `flutter test`); 6 capture HP asli 1080x2400 (termasuk dirty sebelum/sesudah sync) ada di `screenshots/`.

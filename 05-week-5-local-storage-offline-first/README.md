@@ -15,6 +15,8 @@
 
 Proyek: `week5_offline_notes/` — aplikasi Offline Notes (preferensi + CRUD SQLite + sync offline-first).
 
+> Semua screenshot tampilan aplikasi di laporan ini adalah **mobile portrait** (golden 390x844 @3x). Enam capture langsung dari HP Infinix X6739 (1080x2400), termasuk dirty sebelum/sesudah sync, ada di `week5_offline_notes/screenshots/`.
+
 ---
 
 ## Praktikum 1: Preferensi Tema + Terakhir Dibuka (SharedPreferences)
@@ -50,6 +52,13 @@ Setiap tulis lokal menandai `dirty=1`. Badge di AppBar (`dirtyCountProvider`, Ch
 | :---: | :---: |
 | <img src="Screenshot/praktikum3_dirty_sebelum.png" alt="Praktikum 3 Sebelum Sync" width="260" /> | <img src="Screenshot/praktikum3_dirty_sesudah.png" alt="Praktikum 3 Sesudah Sync" width="260" /> |
 | *Chip "2 belum tersinkron", ikon awan-off di tiap baris* | *Chip "sinkron", ikon awan-centang + SnackBar "Sinkron selesai (simulasi)"* |
+
+Bukti tambahan dari HP asli (Infinix X6739, 1080x2400) untuk alur yang sama — mode pesawat ON, tambah 2 catatan, lalu sync:
+
+| HP: Sebelum Sync (Mode Pesawat) | HP: Sesudah Sync |
+| :---: | :---: |
+| <img src="week5_offline_notes/screenshots/05-dirty-sebelum.png" alt="HP sebelum sync" width="220" /> | <img src="week5_offline_notes/screenshots/06-dirty-sesudah.png" alt="HP sesudah sync" width="220" /> |
+| *Badge "2 belum tersinkron", ikon awan-off, status bar mode pesawat* | *Badge "sinkron", ikon awan-centang, SnackBar "Sinkron selesai (simulasi)"* |
 
 ---
 
@@ -100,9 +109,7 @@ Hasil: **20/20 test lolos** (`flutter test` → **All tests passed!**).
 | Hasil Eksekusi `flutter test` |
 | :---: |
 | <img src="Screenshot/flutter_test.png" alt="Hasil flutter test" width="520" /> |
-Hasil eksekusi (26 Sep 2026):
-![](image.png)
-```
+
 Hasil `flutter analyze`:
 ```text
 Analyzing week5_offline_notes...

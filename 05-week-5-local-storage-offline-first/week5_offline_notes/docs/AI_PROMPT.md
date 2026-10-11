@@ -15,4 +15,4 @@ Jelaskan trade-off setiap pilihan.
 ```
 
 Tool: AI coding assistant (Copilot / Claude / Cursor).
-Tanggal: 26 September 2026.
+Tanggal: 7 Oktober 2026.

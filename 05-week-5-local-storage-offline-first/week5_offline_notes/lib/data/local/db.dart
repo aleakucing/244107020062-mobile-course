@@ -5,7 +5,7 @@ Future<Database> openNotesDb() async {
   final dir = await getDatabasesPath();
   return openDatabase(
     p.join(dir, 'offline_notes.db'),
-    version: 1,
+    version: 2,
     onCreate: (db, version) async {
       await db.execute('''
         CREATE TABLE notes(
@@ -23,6 +23,21 @@ Future<Database> openNotesDb() async {
           cached_at TEXT NOT NULL
         )
       ''');
+      await db.execute('''
+        CREATE INDEX IF NOT EXISTS idx_notes_updated
+        ON notes(updated_at DESC)
+      ''');
+    },
+    onUpgrade: (db, oldVersion, newVersion) async {
+      if (oldVersion < 2) {
+        await db.execute('''
+          CREATE INDEX IF NOT EXISTS idx_notes_updated
+          ON notes(updated_at DESC)
+        ''');
+      }
+    },
+    onDowngrade: (db, oldVersion, newVersion) async {
+      // Index aman dipertahankan saat downgrade; data tidak diubah.
     },
   );
 }

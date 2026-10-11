@@ -22,7 +22,7 @@ Mengambil 100 posts dari JSONPlaceholder (`GET /posts`) melalui `Dio` terpusat (
 ### Tangkapan Layar Hasil Praktikum
 | Daftar 100 Posts Berhasil Dimuat |
 | :---: |
-| ![Praktikum 1 Daftar Posts](screenshots/praktikum1_posts.png) |
+| <img src="screenshots/praktikum1_posts.png" alt="Praktikum 1 Daftar Posts" width="260" /> |
 | *ListTile berisi judul + body post dengan CircleAvatar ID; data dari `PostRepository.fetchPosts()`* |
 
 ---
@@ -34,7 +34,7 @@ Dua skenario kegagalan diuji: (1) internet dimatikan (mode pesawat) lalu tekan r
 ### Tangkapan Layar Hasil Praktikum
 | Internet Mati (Mode Pesawat) + Refresh | `baseUrl` Salah (Simulasi Koneksi Gagal) |
 | :---: | :---: |
-| ![Praktikum 2 Offline](screenshots/praktikum2_offline.png) | ![Praktikum 2 BaseUrl Salah](screenshots/praktikum2_baseurl.png) |
+| <img src="screenshots/praktikum2_offline.png" alt="Praktikum 2 Offline" width="240" /> | <img src="screenshots/praktikum2_baseurl.png" alt="Praktikum 2 BaseUrl Salah" width="240" /> |
 | *Pesan "Tidak dapat terhubung ke server" + tombol Coba lagi; nyalakan internet lalu tekan Coba lagi* | *Pesan koneksi yang sama tampil; kembalikan `baseUrl` setelah uji* |
 
 ---
@@ -46,7 +46,7 @@ Dua skenario kegagalan diuji: (1) internet dimatikan (mode pesawat) lalu tekan r
 ### Tangkapan Layar Hasil Praktikum
 | Pagination Berjalan (Data Bertambah Saat Scroll) |
 | :---: |
-| ![Praktikum 3 Paged](screenshots/praktikum3_paged.bmp) |
+| <img src="screenshots/praktikum3_paged.bmp" alt="Praktikum 3 Paged" width="260" /> |
 | *Halaman 1 tampil dulu, spinner bawah saat memuat halaman berikut, item menumpuk via `PagedPostsNotifier`* |
 
 ---
@@ -169,38 +169,73 @@ Jelaskan setiap bagian kode dalam komentar.
 
 ---
 
-## Refleksi Pembelajaran
+## Refleksi
 
-### 1. Mengapa repository layer dipisah dari UI/provider, dan apa untungnya saat testing?
-> [!NOTE]
-> **Prinsip Pemisahan Tanggung Jawab Network:**
-> - **Repository (`CommentRepository`)** hanya tahu cara bicara ke server (path, query, timeout, parsing). **UI/provider** hanya tahu cara menampilkan `AsyncValue`.
-> - Keuntungan testing: repository bisa diberi `Dio` mock via constructor, sehingga `fetchComments` diuji tanpa internet (seperti test interceptor di minggu ini). UI pun bisa diuji dengan override provider tanpa menyentuh HTTP.
-> - Tanpa pemisahan, setiap perubahan endpoint memaksa edit widget, dan test selalu butuh server sungguhan (*flaky*).
+### 1. Mengapa UI dilarang memanggil Dio langsung? Apa yang rusak jika aturan ini dilanggar?
 
----
+**Alasan Mengapa UI Dilarang Memanggil Dio Langsung:**
+* **Separation of Concerns (Pemisahan Tanggung Jawab):** Lapisan UI (Widget) hanya bertugas untuk menyajikan data dan menangani interaksi pengguna (*presentation logic*). Detail teknis HTTP (URL endpoint, header, query parameter, timeout, dan serialisasi JSON) adalah tanggung jawab *Repository/Data Layer*.
+* **Abstraksi Sumber Data:** UI seharusnya tidak peduli dari mana data diambil—apakah dari Dio (REST API), cache lokal, SQLite/Hive, atau data tiruan (*mock*). UI hanya mengonsumsi state (`AsyncValue`).
 
-### 2. Kapan timeout 10 detik penting, dan apa bedanya `connectTimeout`/`receiveTimeout` vs `.timeout()`?
-- **Penting saat** sinyal lemah, server lambat, atau DNS menggantung — tanpa timeout, `await` tidak pernah kembali dan UI macet di spinner selamanya.
-- **`connectTimeout`/`receiveTimeout` (di `createDio()`)**: batas per-fase koneksi di level Dio (jabat tangan TCP, jeda antar-byte respons).
-- **`.timeout(Duration(seconds: 10))` (di `fetchComments`)**: batas total operasi di level Dart, menangkap juga kasus di luar klasifikasi Dio (maka ditangani sebagai `TimeoutException` di `commentErrorMessage`).
-- Praktik minggu ini memakai keduanya: Dio sebagai jaring pengaman umum, `.timeout()` sebagai pemenuhan syarat eksplisit per-method.
+**Hal yang Rusak / Terganggu Jika Aturan Ini Dilanggar:**
+1. **Pengujian Kode Menjadi Sangat Sulit (*Untestable UI*):** Widget tidak dapat diuji secara terisolasi tanpa koneksi internet atau tanpa membuat mock HTTP client yang sangat rumit di level widget. Dengan adanya Repository Layer, repository dapat di-mock dengan mudah via constructor injection atau provider override saat pengujian.
+2. **Keterikatan yang Terlalu Erat (*Tight Coupling*):** Widget menjadi terikat mati dengan library `Dio`. Jika di kemudian hari arsitektur beralih ke library HTTP lain, GraphQL, atau Firebase, seluruh berkas tampilan UI harus dibongkar dan diubah.
+3. **Duplikasi Kode (*Code Duplication*):** Jika beberapa halaman/widget membutuhkan data yang sama, konfigurasi Dio, penanganan timeout, header otentikasi, dan parsing JSON akan terduplikasi di banyak tempat.
+4. **State Management & Caching Kacau (*Redundant Network Calls*):** Memanggil Dio langsung di dalam lifecycle widget (seperti `initState` atau `build`) berisiko memicu request jaringan berulang setiap kali widget melakukan *rebuild*, menghamburkan kuota pengguna, membebani server, serta berisiko *memory leak* jika widget di-*dispose* sebelum request selesai.
+5. **Penanganan Error Terfragmentasi:** Penanganan exception (`DioException`, error timeout, HTTP 404/500) harus ditulis berulang kali dengan blok `try-catch` di setiap widget, membuat antarmuka rentan menampilkan pesan error yang tidak seragam bagi pengguna.
 
 ---
 
-### 3. Fetch 100 posts sekaligus vs pagination 10 per halaman — kapan masing-masing tepat?
-- **Fetch sekaligus (`fetchPosts`)**: cocok untuk dataset kecil/stabil yang butuh pencarian/sort lokal instan (100 posts JSONPlaceholder masih ringan). Kekurangan: TTFB besar, memori menampung semua, tidak skalabel.
-- **Pagination (`fetchPostsPage` + infinite scroll)**: wajib saat data besar/tumbuh (feed, katalog). Kelebihan: halaman 1 cepat tampil, memori bertahap, sinyal jelek tetap lihat data awal. Kekurangan: logika lebih kompleks (page tracker, `hasMore`, cegah double-fetch via `isLoadingMore`).
-- Minggu ini membuktikan keduanya: daftar penuh untuk kesederhanaan, `PagedPostPage` untuk pengalaman produksi.
+### 2. Kapan pagination client-side cukup, dan kapan harus mengandalkan pagination server (`_page` / `_limit`)?
+
+* **Kapan Pagination Client-Side Cukup:**
+  * **Volume Data Kecil & Terbatas:** Jumlah data relatif sedikit dan ukurannya dapat diprediksi (misalnya < 100–200 item, seperti daftar kategori produk, daftar opsi dropdown, atau pengaturan).
+  * **Ukuran Payload Ringan:** Ukuran keseluruhan payload JSON sangat kecil (puluhan KB), sehingga proses pengunduhan sekaligus di awal tidak membebani memori maupun kuota pengguna.
+  * **Kebutuhan Fitur Pencarian & Filter Lokal Instan:** Aplikasi membutuhkan fitur pencarian (*instant search*), penyaringan (*filter*), dan pengurutan (*sorting*) langsung di sisi perangkat tanpa jeda jaringan (*zero network latency*). Seluruh data disimpan di memori dan dipotong (*sliced*) per halaman tampilan secara instan.
+  * **Data Jarang Berubah:** Data bersifat statis atau semi-statis yang tidak memerlukan sinkronisasi *real-time* ke server secara berkala.
+
+* **Kapan Harus Mengandalkan Pagination Server (`_page` / `_limit`):**
+  * **Volume Data Besar atau Terus Bertambah:** Dataset berskala ratusan, ribuan, hingga jutaan item (misalnya linimasa/feed media sosial, katalog e-commerce, riwayat transaksi, atau komentar).
+  * **Optimalisasi Waktu Muat Awal (*Fast Initial Render / TTFB*):** Pengguna tidak perlu menunggu ribuan baris diunduh hanya untuk membaca beberapa baris pertama. Mengambil 10 item pertama membuat aplikasi tampil instan dalam hitungan milidetik.
+  * **Efisiensi Memori (RAM) Perangkat Mobile:** Menyimpan dan me-render ribuan objek Dart secara bersamaan dapat memicu lag, penurunan FPS (*jank*), hingga *crash* akibat *Out-of-Memory* (OOM).
+  * **Efisiensi Beban Server dan Basis Data:** Server hanya memproses query database sesuai kebutuhan (`LIMIT` & `OFFSET` atau kueri berbasis kursor), menghindari *full table scan* yang menguras sumber daya komputasi server.
 
 ---
 
-### 4. Bagian mana dari kode rekomendasi AI yang Anda perbaiki, dan mengapa perbaikan tersebut penting?
-1. **Perbaikan API Family Riverpod:**  
-   Draf AI memakai `FamilyAsyncNotifier` (pola generator) pada proyek non-generator sehingga `ref`/`state` undefined dan test gagal compile. Diperbaiki ke `extends AsyncNotifier` + constructor `this.postId` + `AsyncNotifierProvider.family`. Penting karena tanpa ini tidak ada satu pun kode komentar yang bisa berjalan.
-2. **Penonaktifan Retry Otomatis:**  
-   AI tidak menyetel `retry`, sehingga Riverpod 3 me-retry diam-diam saat error — test menggantung dan menghantam HTTP berulang. Ditambah `retry: (retryCount, error) => null` mengikuti pola `postListProvider`. Penting untuk error yang final dan test deterministik.
-3. **Pesan 500 Eksplisit + `TimeoutException`:**  
-   Draf awal hanya generik "server bermasalah" dan lupa `TimeoutException` Dart dari `.timeout()`. Ditambah cabang `code == 500` ("Server sedang gangguan (500)") dan cabang `TimeoutException`. Penting agar keempat error wajib terpetakan ke pesan ramah, bukan stacktrace.
-4. **Verifikasi TDD Merah-Hijau:**  
-   Test ditulis dulu dan disaksikan gagal (file model belum ada), baru implementasi minimal hingga hijau. Penting agar test terbukti benar-benar menguji perilaku, bukan sekadar lolos karena mengikuti kode yang sudah jadi.
+### 3. Bagaimana exception repository berubah menjadi `AsyncError` tanpa try/catch di setiap widget? Kapan try/catch eksplisit tetap dibutuhkan?
+
+* **Bagaimana Exception Berubah Menjadi `AsyncError` Tanpa `try/catch` di Setiap Widget:**
+  * **Mekanisme *Error Boundary* Internal Riverpod:** Pada `AsyncNotifier` (atau `FutureProvider`), metode `build()` atau komputasi *asynchronous* dieksekusi di dalam blok penanganan internal Riverpod.
+  * **Transformasi Otomatis ke `AsyncValue.error`:** Ketika repository melempar exception (misalnya `DioException` saat tidak ada koneksi internet atau `TimeoutException` saat server lambat), Riverpod secara otomatis menangkap (*catch*) exception tersebut beserta *stack trace*-nya. Riverpod lalu mengubah state notifier dari `AsyncLoading` menjadi `AsyncValue.error(error, stackTrace)`.
+  * **Konsumsi Deklaratif Melalui Pattern Matching di UI:** Di sisi widget, kita cukup menggunakan `ref.watch(provider).when(data: ..., error: (err, stack) => ..., loading: ...)` secara deklaratif. Widget otomatis menampilkan UI error sesuai state tanpa perlu menulis blok `try-catch` manual di dalam method `build()`.
+
+* **Kapan `try/catch` Eksplisit Tetap Dibutuhkan?**
+  1. **Aksi Interaksi Pengguna Bersifat Imperatif (Mutasi Data / Event-Driven):** Saat pengguna memicu aksi tombol, misalnya menekan tombol *Submit*, *Hapus Post*, atau *Kirim Komentar* (`onPressed`). Jika method notifier dipanggil secara imperatif (`await ref.read(postNotifier.notifier).deletePost(id)`), kita memerlukan `try/catch` eksplisit pada fungsi *event handler* tersebut untuk menampilkan umpan balik sesaat seperti `SnackBar`, `AlertDialog`, atau *toast*.
+  2. **Penanganan Error Parsial di Level Repository (*Resilient Parsing*):** Ketika mem-parsing sekumpulan item JSON dari API dan terdapat satu item dengan format korup/rusak. Blok `try/catch` lokal di dalam perulangan repository diperlukan agar item rusak tersebut bisa diabaikan atau diganti nilai default tanpa menggagalkan pemuatan seluruh daftar item.
+  3. **Penerjemahan Error Menjadi Domain Exception (*Error Mapping*):** Ketika repository ingin menangkap error teknis tingkat rendah (`DioException`, `SocketException`) dan membungkusnya menjadi *custom domain exception* yang lebih bersih (seperti `NetworkFailure`, `ServerFailure`, `AuthFailure`) sebelum diteruskan ke lapisan provider/UI.
+
+---
+
+### 4. Bagian mana dari hasil AI yang Anda perbaiki, dan mengapa?
+
+Berdasarkan pengujian dan validasi implementasi kode *Comment Repository Layer* yang direkomendasikan oleh AI, terdapat 4 aspek utama yang diperbaiki:
+
+1. **Perbaikan API Riverpod Family (Kesesuaian Versi & Pola Non-Generator):**
+   * *Temuan AI:* Kode awal yang diberikan AI mengasumsikan penggunaan `FamilyAsyncNotifier` (sintaks berbasis generator kode `riverpod_generator`), padahal proyek ini menggunakan Riverpod 3 murni (*non-generator*). Akibatnya terjadi *compile error* karena `ref` dan `state` tidak dikenali.
+   * *Perbaikan:* Mengubahnya ke pola manual yang sesuai: kelas `CommentListNotifier extends AsyncNotifier<List<Comment>>` dengan konstruktor penerima argumen `this.postId`, lalu didaftarkan melalui `AsyncNotifierProvider.family`.
+   * *Alasan:* Memastikan kode kompatibel dengan dependensi proyek saat ini dan dapat dikompilasi tanpa memerlukan *build runner*.
+
+2. **Penonaktifan Percobaan Ulang Otomatis (*Auto-Retry*):**
+   * *Temuan AI:* AI tidak menyetel parameter penanganan *retry*, sehingga Riverpod 3 secara *default* terus melakukan percobaan ulang saat terjadi error jaringan. Hal ini menyebabkan unit test menggantung (*hanging/timeout*) dan membebani server dengan request berulang.
+   * *Perbaikan:* Menambahkan `retry: (retryCount, error) => null` pada definisi provider.
+   * *Alasan:* Menjadikan status error bersifat final dan deterministik sehingga mudah diuji pada unit test dan tidak memicu *infinite loop* saat kondisi offline.
+
+3. **Penyempurnaan Error Handling Ramah (Status HTTP 500 dan `TimeoutException` Dart):**
+   * *Temuan AI:* AI hanya menyediakan pemetaan error umum dan melewatkan pesan spesifik untuk kode status HTTP 500, serta tidak menangani `TimeoutException` bawaan Dart yang dilempar oleh pemanggilan `.timeout(Duration(seconds: 10))` di level repository.
+   * *Perbaikan:* Menambahkan percabangan kondisi untuk `statusCode == 500` ("Server sedang gangguan (500)") serta klausa `if (error is TimeoutException)` pada fungsi `commentErrorMessage()`.
+   * *Alasan:* Menjamin seluruh 4 skenario kegagalan wajib (timeout, connection error, 404, 500) menampilkan pesan Bahasa Indonesia yang ramah dan mudah dipahami pengguna, bukan stack trace teknis mentah.
+
+4. **Penerapan Alur Test-Driven Development (TDD):**
+   * *Temuan AI:* Rekomendasi AI langsung memberikan kode jadi tanpa memastikan tahapan pengujian.
+   * *Perbaikan:* Menerapkan siklus *Red-Green-Refactor*, yaitu menulis unit test `test/comment_test.dart` terlebih dahulu hingga gagal (*Red*), baru kemudian mengimplementasikan model dan repository hingga seluruh 7 unit test lulus (*Green*).
+   * *Alasan:* Memastikan test benar-benar memvalidasi perilaku kode, bukan hanya sekadar lolos formalitas.

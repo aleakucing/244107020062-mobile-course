@@ -1,20 +1,31 @@
-# Screenshots — Week 5
+# Screenshots — Week 5 (Mobile)
 
-PNG di folder ini diambil asli dari app (Chrome, build web) via agent-browser, tanpa rekayasa.
+Screenshot di folder ini diambil langsung dari HP **Infinix X6739 (Android 14)** saat aplikasi berjalan dalam mode debug. Semua gambar berformat portrait **1080x2400** dan menunjukkan tampilan mobile, bukan desktop/web.
 
 | File | Isi | Status praktikum |
 |---|---|---|
-| `01-notes-list.png` | Tab Catatan di web: state error + tombol `Coba lagi` | Memenuhi sebagian: bukti state **error** (`friendlyDbError`). sqflite tidak jalan di web, daftar asli hanya tampil di HP |
-| `02-settings-terang.png` | Tab Pengaturan tema terang + terakhir dibuka | Memenuhi (toggle tema + persistensi SharedPreferences) |
+| `01-notes-list.png` | Tab Catatan, state kosong ("Belum ada catatan. Tambah lewat tombol +"), tombol `sinkron`, dan FAB | Bukti UI daftar catatan (state kosong) |
+| `02-settings-terang.png` | Tab Pengaturan tema terang + "Terakhir dibuka" | Memenuhi (toggle tema + persistensi SharedPreferences) |
 | `03-settings-gelap.png` | Tab Pengaturan tema gelap (switch ON) | Memenuhi (persistensi tema) |
-| `04-offline-mode.png` | Tab Catatan dengan network diputus (`set offline on`) | Bukti parsial: UI tetap render dari state lokal tanpa network |
+| `04-offline-mode.png` | Tab Catatan saat mode pesawat ON; UI tetap tampil dari state lokal SQLite | Bukti parsial offline-first: UI tetap berjalan tanpa network |
+| `05-dirty-sebelum.png` | Dua catatan dibuat saat mode pesawat ON; badge **2 belum tersinkron** dan ikon awan-off di tiap baris | Bukti antrean sync dari HP |
+| `06-dirty-sesudah.png` | Mode pesawat OFF lalu tekan `sinkron`; badge **sinkron**, ikon awan-centang, dan SnackBar "Sinkron selesai (simulasi)" | Bukti `markAllSynced()` dari HP |
 
-Belum ada — wajib difoto di HP (Infinix sempat terputus saat pengambilan):
-- `05-dirty-sebelum.png`: tambah 2 catatan saat mode pesawat ON → badge `2 belum tersinkron`.
-- `06-dirty-sesudah.png`: mode pesawat OFF → tekan tombol sync → badge `sinkron`.
-- Daftar catatan SQLite + badge: hanya tampil di HP, bukan di web.
+Screenshot laporan utama (daftar berisi 2 catatan, dialog tambah, dirty sebelum/sesudah sync) ada di `../Screenshot/` — golden test **390x844 @3x** yang juga portrait mobile. Folder ini menyimpan capture HP asli untuk alur yang sama, termasuk bukti mode pesawat dan SnackBar sync.
+
+## Galeri mobile
+
+| Catatan (kosong) | Pengaturan terang |
+| :---: | :---: |
+| ![Catatan kosong](01-notes-list.png) | ![Pengaturan terang](02-settings-terang.png) |
+| **Pengaturan gelap** | **Mode pesawat (offline)** |
+| ![Pengaturan gelap](03-settings-gelap.png) | ![Mode pesawat](04-offline-mode.png) |
+| **Sebelum sync (mode pesawat)** | **Sesudah sync** |
+| ![Sebelum sync](05-dirty-sebelum.png) | ![Sesudah sync](06-dirty-sesudah.png) |
 
 Cara ambil di HP:
-1. Sambungkan HP, `flutter run` (debug).
-2. Mode pesawat ON → tambah 2 catatan via tombol + → screenshot (`05`).
-3. Mode pesawat OFF → tekan ikon sync di AppBar → screenshot (`06`).
+1. Sambungkan HP, jalankan `flutter run` (debug).
+2. Tab Catatan kosong → `01`; tab Pengaturan tema terang/gelap → `02`/`03`.
+3. Mode pesawat ON → buka tab Catatan → `04`.
+4. Masih mode pesawat, tambah 2 catatan → badge `2 belum tersinkron` → `05`.
+5. Mode pesawat OFF → tekan ikon sync di AppBar → badge `sinkron` + SnackBar → `06`.
