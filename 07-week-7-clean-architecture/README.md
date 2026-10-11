@@ -102,6 +102,8 @@ flutter test             # harus: 14/14 passed
 - [x] Dependency rule terbukti — lihat `docs/verifikasi-grep.txt` (3 grep NOL).
 - [x] Behavior identik — `screenshots/` before/after + uji manual.
 - [x] 14 test lulus (syarat minimal 2: `test/get_notes_test.dart` sukses + failure).
+- [x] 6 golden HP portrait (`test/screenshot_test.dart` + `lib/screenshot_main.dart`,
+      dipublikasikan ke `screenshots/01..06`) — teknik sama seperti Week 5.
 - [x] AI Challenge: `docs/AI_PROMPT.md`, `docs/ai-output.md`,
       `docs/keputusan-final.md` (tabel usulan-vs-keputusan + alasan).
 - [x] `flutter analyze` bersih, `flutter test` hijau.

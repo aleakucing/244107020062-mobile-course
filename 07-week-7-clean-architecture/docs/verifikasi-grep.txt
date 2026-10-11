@@ -20,8 +20,10 @@ Dapat diuji tanpa emulator (test/get_notes_test.dart, test/add_note_test.dart).
 ## 3. Static analysis + test
 
 flutter analyze: No issues found!
-flutter test: 14/14 passed
+flutter test: 20/20 passed
 - get_notes_test.dart: 2 (sukses + failure, sesuai syarat minimal codelab)
 - add_note_test.dart: 5 (validasi kosong, sukses, failure repo, sync sukses/gagal)
 - note_model_test.dart: 5 (roundtrip, aman field hilang, format murni x3)
 - widget_test.dart: 2 (list dari provider, empty state)
+- screenshot_test.dart: 6 golden HP portrait (daftar, dialog, terang, gelap,
+  dirty sebelum/sesudah) — juga dipublikasikan ke screenshots/01..06.
