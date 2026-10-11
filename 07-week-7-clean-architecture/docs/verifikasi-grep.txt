@@ -1,0 +1,27 @@
+# Verifikasi dependency rule — 2026-10-14
+
+## 1. Presentation steril dari data mentah (harus NOL hasil)
+
+Pola: Dio\(|openDatabase|getDatabasesPath|FlutterSecureStorage|SharedPreferences\.getInstance|jsonDecode
+Scope: lib/features/*/presentation + lib/features/settings/presentation
+
+Hasil: NOL — tidak ada widget/provider UI yang menyentuh SQLite/Dio/JSON langsung.
+Wiring SQLite (openNotesDb) hanya diimpor oleh notes_providers.dart (DI),
+bukan oleh pages. SharedPreferences hanya di settings_repository_impl.dart (data).
+
+## 2. Domain steril dari framework & package (harus NOL hasil)
+
+Pola: package:flutter|package:dio|package:sqflite|package:firebase|package:shared_preferences
+Scope: lib/features/*/domain + lib/core
+
+Hasil: NOL — entity, repository interface, use case, failures murni Dart.
+Dapat diuji tanpa emulator (test/get_notes_test.dart, test/add_note_test.dart).
+
+## 3. Static analysis + test
+
+flutter analyze: No issues found!
+flutter test: 14/14 passed
+- get_notes_test.dart: 2 (sukses + failure, sesuai syarat minimal codelab)
+- add_note_test.dart: 5 (validasi kosong, sukses, failure repo, sync sukses/gagal)
+- note_model_test.dart: 5 (roundtrip, aman field hilang, format murni x3)
+- widget_test.dart: 2 (list dari provider, empty state)
