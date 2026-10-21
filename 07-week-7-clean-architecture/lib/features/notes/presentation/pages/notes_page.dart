@@ -7,46 +7,105 @@ import '../providers/notes_providers.dart';
 
 // Halaman bersih: hanya membaca state via provider.
 // Tanpa SQL, Dio, JSON, SharedPreferences, formatting tanggal mentah.
-class NotesPage extends ConsumerWidget {
+class NotesPage extends ConsumerStatefulWidget {
   const NotesPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final notes = ref.watch(notesProvider);
+  ConsumerState<NotesPage> createState() => _NotesPageState();
+}
+
+class _NotesPageState extends ConsumerState<NotesPage> {
+  bool _isSearching = false;
+  final _searchC = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchC.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final notes = ref.watch(filteredNotesProvider);
     final dirty = ref.watch(dirtyCountProvider);
+    final query = ref.watch(searchQueryProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Catatan Offline'),
+        title: _isSearching
+            ? TextField(
+                key: const Key('search-notes-field'),
+                controller: _searchC,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Cari catatan...',
+                  border: InputBorder.none,
+                ),
+                onChanged: (val) =>
+                    ref.read(searchQueryProvider.notifier).setQuery(val),
+              )
+            : const Text('Catatan Offline'),
         actions: [
-          dirty.when(
-            data: (n) => Padding(
-              padding: const EdgeInsets.only(right: 4),
-              child: Chip(
-                label: Text(n == 0 ? 'sinkron' : '$n belum tersinkron'),
-                visualDensity: VisualDensity.compact,
-              ),
+          if (_isSearching)
+            IconButton(
+              tooltip: 'Tutup pencarian',
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                setState(() => _isSearching = false);
+                _searchC.clear();
+                ref.read(searchQueryProvider.notifier).setQuery('');
+              },
+            )
+          else ...[
+            IconButton(
+              tooltip: 'Cari catatan',
+              icon: const Icon(Icons.search),
+              onPressed: () => setState(() => _isSearching = true),
             ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, _) => const SizedBox.shrink(),
-          ),
-          IconButton(
-            tooltip: 'Sinkronkan',
-            icon: const Icon(Icons.sync),
-            onPressed: () async {
-              await ref.read(notesProvider.notifier).sync();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Sinkron selesai (simulasi)')),
-                );
-              }
-            },
-          ),
+            dirty.when(
+              data: (n) => Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: Chip(
+                  label: Text(n == 0 ? 'sinkron' : '$n belum tersinkron'),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+              loading: () => const SizedBox.shrink(),
+              error: (_, _) => const SizedBox.shrink(),
+            ),
+            IconButton(
+              tooltip: 'Sinkronkan',
+              icon: const Icon(Icons.sync),
+              onPressed: () async {
+                await ref.read(notesProvider.notifier).sync();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Sinkron selesai (simulasi)')),
+                  );
+                }
+              },
+            ),
+          ],
         ],
       ),
       body: notes.when(
         data: (items) {
           if (items.isEmpty) {
+            if (query.trim().isNotEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.search_off, size: 48, color: Colors.grey),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Tidak ada catatan yang cocok dengan "$query"',
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            }
             return const Center(
               child: Text(
                 'Belum ada catatan.\nTambah lewat tombol +.',

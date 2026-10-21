@@ -7,6 +7,7 @@ import '../../domain/entities/note.dart';
 import '../../domain/repositories/note_repository.dart';
 import '../../domain/usecases/add_note.dart';
 import '../../domain/usecases/get_notes.dart';
+import '../../domain/usecases/search_notes.dart';
 import '../../domain/usecases/sync_notes.dart';
 import '../../data/repositories/note_repository_impl.dart';
 
@@ -97,6 +98,27 @@ final notesProvider = AsyncNotifierProvider<NotesNotifier, List<Note>>(
 final dirtyCountProvider = FutureProvider<int>((ref) async {
   final notes = await ref.watch(notesProvider.future);
   return notes.where((n) => n.dirty).length;
+});
+
+final searchNotesProvider = Provider<SearchNotes>((ref) => const SearchNotes());
+
+class SearchQueryNotifier extends Notifier<String> {
+  @override
+  String build() => '';
+
+  void setQuery(String query) => state = query;
+}
+
+final searchQueryProvider = NotifierProvider<SearchQueryNotifier, String>(
+  SearchQueryNotifier.new,
+);
+
+final filteredNotesProvider = Provider<AsyncValue<List<Note>>>((ref) {
+  final notesAsync = ref.watch(notesProvider);
+  final query = ref.watch(searchQueryProvider);
+  final search = ref.watch(searchNotesProvider);
+
+  return notesAsync.whenData((notes) => search(notes: notes, query: query));
 });
 
 /// Helper testing: baca state pertama yang bukan loading.
