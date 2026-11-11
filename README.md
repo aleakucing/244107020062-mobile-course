@@ -20,10 +20,10 @@
 | **06** | Authentication, Security & FCM | [`06-week-6-authentication-security-fcm/`](./06-week-6-authentication-security-fcm/) | Selesai |
 | **07** | Clean Architecture | [`07-week-7-clean-architecture/`](./07-week-7-clean-architecture/) | Selesai |
 | **08** | Mid-Project Review & Code Review | [`08-week-8-mid-project-review/`](./08-week-8-mid-project-review/) | Selesai |
-| **09** | AI-Assisted Development & Vibe Coding | `09-week-9-ai-assisted-development/` | - |
-| **10** | AI Feature Integration | `10-week-10-ai-feature-integration/` | - |
-| **11** | Performance Optimization | `11-week-11-performance-optimization/` | - |
-| **12** | Testing & Quality Assurance | `12-week-12-testing-quality-assurance/` | - |
+| **09** | AI-Assisted Development & Vibe Coding | [`09-week-9-ai-assisted-development/`](./09-week-9-ai-assisted-development/) | Selesai |
+| **10** | AI Feature Integration | [`10-week-10-ai-feature-integration/`](./10-week-10-ai-feature-integration/) | Selesai |
+| **11** | Performance Optimization | [`11-week-11-performance-optimization/`](./11-week-11-performance-optimization/) | Selesai |
+| **12** | Testing & Quality Assurance | [`12-week-12-testing-quality-assurance/`](./12-week-12-testing-quality-assurance/) | Selesai |
 | **13** | CI/CD Automation | `13-week-13-ci-cd-automation/` | - |
 | **14** | Deployment & Monitoring | `14-week-14-deployment-monitoring/` | - |
 | **15** | Secure Mobile Development | `15-week-15-secure-mobile-development/` | - |

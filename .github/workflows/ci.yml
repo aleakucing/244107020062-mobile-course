@@ -8,9 +8,16 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - 07-week-7-clean-architecture
+          - 10-week-10-ai-feature-integration
+          - 11-week-11-performance-optimization
+          - 12-week-12-testing-quality-assurance
     defaults:
       run:
-        working-directory: 07-week-7-clean-architecture
+        working-directory: ${{ matrix.project }}
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -24,5 +31,5 @@ jobs:
         run: dart format --output=none --set-exit-if-changed .
       - name: Run static analysis
         run: flutter analyze
-      - name: Run automated unit tests
+      - name: Run automated tests
         run: flutter test --no-pub
